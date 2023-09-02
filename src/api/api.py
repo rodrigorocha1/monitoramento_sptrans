@@ -51,7 +51,7 @@ class API():
             return 'Erro na conexão', False
 
     @classmethod
-    def pos(cls):
+    def obter_operacao(cls):
         api_chave = cls.fazer_login_api()
         pos = requests.get(
             'http://api.olhovivo.sptrans.com.br/v2.1/Posicao', cookies={"apiCredentials": api_chave[0]}
@@ -60,4 +60,4 @@ class API():
 
 
 if __name__ == '__main__':
-    print(API.pos())
+    print(API.obter_operacao())
