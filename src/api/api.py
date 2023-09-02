@@ -1,4 +1,5 @@
 from typing import Tuple
+from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from airflow.models import Variable
@@ -22,7 +23,8 @@ class API():
             'project': 'OV',
             'lincod': codigo_linha
         }
-        res = requests.get(url, params=params, timeout=20)
+        sleep(60)
+        res = requests.get(url, params=params, timeout=60)
         html_page = res.text
         principal = BeautifulSoup(html_page, 'html.parser')
         area_codigo = principal.find(id='areCod').attrs['value']
@@ -32,6 +34,11 @@ class API():
 
     @classmethod
     def fazer_login_api(cls) -> Tuple[str, bool]:
+        """Método para executar o login na API da sptran
+
+        Returns:
+            Tuple[str, bool]: Uma tupla com mensagem de erro ou cookie e um booleano
+        """
         try:
             auth = requests.post(
                 Variable.get('URL_SPTRANS') + '/v2.1/Login/Autenticar?token=' + Variable.get('TOKEN_SPTRANS'))
