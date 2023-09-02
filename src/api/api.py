@@ -6,7 +6,15 @@ from bs4 import BeautifulSoup
 class API():
 
     @classmethod
-    def ober_dados_linha(cls, codigo_linha: str) -> Tuple[str, str, str]:
+    def ober_dados_linha(cls, codigo_linha: str) -> Tuple[str, str, str, str]:
+        """Método para retornar os dados pertecentes a linha
+
+        Args:
+            codigo_linha (str): código da linha Ex: 1012-10
+
+        Returns:
+            Tuple[str, str, str, str]: Um tupla com os dados co código da linha, área de operação, consocio e empresa
+        """
         url = 'https://sistemas.sptrans.com.br/PlanOperWeb/detalheLinha.asp'
         params = {
             'TpDiaID': '0',
