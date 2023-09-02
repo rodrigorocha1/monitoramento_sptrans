@@ -1,8 +1,9 @@
 [MASTER]
-disable = 
-      C0114, 
-      C0115,
-      C0116, 
+disable=
+      C0114, # Missing-module-docstring
+      C0115, # Missing-class-docstring
+      C0116, # Missing-function-docstring
+
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
@@ -91,7 +92,8 @@ disable=raw-checker-failed,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
-        use-symbolic-message-instead
+        use-symbolic-message-instead,
+        
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
