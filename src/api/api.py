@@ -21,7 +21,7 @@ class API():
             'project': 'OV',
             'lincod': codigo_linha
         }
-        res = requests.get(url, params=params)
+        res = requests.get(url, params=params, timeout=10)
         html_page = res.text
         principal = BeautifulSoup(html_page, 'html.parser')
         area_codigo = principal.find(id='areCod').attrs['value']
