@@ -5,7 +5,7 @@ try:
 except ModuleNotFoundError:
     pass
 from os.path import join
-from datetime import datetime
+import pendulum
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.python import BranchPythonOperator
@@ -16,8 +16,9 @@ from src.api.api import API
 
 dag = DAG('Extracao_dados_api_sptrans',
           description='Extração de dados',
-          schedule_interval=None,
-          start_date=datetime(2023, 3, 5))
+          schedule_interval='*/2 * * * *',
+          catchup=False,
+          start_date=pendulum.datetime(2023, 9, 3, tz='UTC'))
 
 
 inicio_dag = EmptyOperator(
