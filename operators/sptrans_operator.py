@@ -21,6 +21,11 @@ class SptransOperator(BaseOperator):
     template_fields = ['file_path']
 
     def __init__(self, file_path, **kwargs):
+        """Método de Init para a classe
+
+        Args:
+            file_path (_type_): caminho da
+        """
         self.file_path = file_path
         super().__init__(**kwargs)
 
@@ -28,7 +33,7 @@ class SptransOperator(BaseOperator):
         (Path(self.file_path).parent).mkdir(parents=True, exist_ok=True)
 
     def execute(self, context: Context) -> Any:
-        """_summary_
+        """Método para gravar o json
 
         Args:
             context (Context): _description_
