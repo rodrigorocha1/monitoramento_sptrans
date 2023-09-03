@@ -1,6 +1,8 @@
 from typing import Any
 import json
 from datetime import datetime, timedelta
+from pathlib import Path
+from os.path import join
 from airflow.models import BaseOperator, TaskInstance, DAG
 from airflow.utils.context import Context
 try:
@@ -19,8 +21,12 @@ class SptransOperator(BaseOperator):
         BaseOperator (_type_): _description_
     """
 
-    def __init__(self,  **kwargs):
+    def __init__(self, file_path, **kwargs):
+        self.file_path = file_path
         super().__init__(**kwargs)
+
+    def create_parent_folder(self):
+        (Path(self.file_path).parent).mkdir(parents=True, exist_ok=True)
 
     def execute(self, context: Context) -> Any:
         """_summary_
@@ -32,7 +38,8 @@ class SptransOperator(BaseOperator):
             Any: _description_
         """
         req = SptransHook().run()
-        with open('extracao_operacao.json', 'w') as output_file:
+        self.create_parent_folder()
+        with open(self.file_path, 'w') as output_file:
             json.dump(req, output_file, ensure_ascii=False)
             output_file.write('\n')
 
@@ -45,6 +52,13 @@ if __name__ == '__main__':
     start_time = (datetime.now() + timedelta(-1)
                   ).date().strftime(TIMESTAMP_FORMAT)
     with DAG(dag_id='Sptrans_API', start_date=datetime.now()) as dag:
-        to = SptransOperator(task_id='test_run')
+        to = SptransOperator(
+            task_id='test_run',
+            file_path=join(
+                'data/datalake/bronze',
+                f'extract_date={datetime.now().date()}',
+                f'posicao_{datetime.now().date().strftime("%y%m%d")}.json'
+            ),
+        )
         ti = TaskInstance(task=to)
         to.execute(ti.task_id)
