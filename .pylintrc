@@ -9,7 +9,9 @@ disable=
       W0221,
       R1707,
       W0702,
-      R0201
+      R0201,
+      W0223,
+      W0235,
 
 
 # A comma-separated list of package or module names from where C extensions may

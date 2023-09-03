@@ -12,7 +12,7 @@ from src.api.api import API
 
 class SptransHook(HttpHook):
     def __init__(self,  conn_id=None) -> None:
-        self.conn_id = conn_id or 'sptrans_default'
+        self.conn_id = conn_id
         super().__init__(http_conn_id=self.conn_id)
 
     def create_url(self):

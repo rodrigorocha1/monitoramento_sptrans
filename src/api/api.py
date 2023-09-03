@@ -41,7 +41,9 @@ class API():
         """
         try:
             auth = requests.post(
-                Variable.get('URL_SPTRANS') + '/v2.1/Login/Autenticar?token=' + Variable.get('TOKEN_SPTRANS'))
+                Variable.get(
+                    'URL_SPTRANS') + '/v2.1/Login/Autenticar?token=' + Variable.get('TOKEN_SPTRANS')
+            )
             credenciais = auth.headers["Set-Cookie"].split(";")[
                 0].split("=")[-1]
             return credenciais, True
