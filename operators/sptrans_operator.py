@@ -38,6 +38,6 @@ class SptransOperator(BaseOperator):
         """
         req = SptransHook().run()
         self.create_parent_folder()
-        with open(self.file_path, 'w') as output_file:
+        with open(self.file_path, 'a') as output_file:
             json.dump(req, output_file, ensure_ascii=False)
             output_file.write('\n')

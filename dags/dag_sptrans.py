@@ -35,15 +35,9 @@ def checar_status(**context):
     flag = context['task_instance'].xcom_pull(task_ids='task_check_api')
     print('FLAG DA FLAG', flag)
     if flag:
-        return 'task_sucesso'
+        return 'extrair_dados_sptrans'
     return 'task_falha'
 
-
-task_sucesso = EmptyOperator(
-    task_id='task_sucesso',
-    trigger_rule='none_failed',
-    dag=dag
-)
 
 task_falha = EmptyOperator(
     task_id='task_falha',
@@ -60,7 +54,7 @@ banch_check_api = BranchPythonOperator(
 )
 
 to = SptransOperator(
-    task_id='test_run',
+    task_id='extrair_dados_sptrans',
     file_path=join(
         'data/datalake/bronze',
         'extract_date={{ ds }}',
@@ -71,9 +65,9 @@ to = SptransOperator(
 task_fim_dag = EmptyOperator(
     task_id='task_fim_dag',
     dag=dag,
-    trigger_rule='dummy'
+    trigger_rule='all_done'
 )
 
 inicio_dag >> task_check_api >> banch_check_api
-banch_check_api >> task_sucesso >> to >> task_fim_dag
+banch_check_api >> to >> task_fim_dag
 banch_check_api >> task_falha >> task_fim_dag
