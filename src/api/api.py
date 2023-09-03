@@ -23,8 +23,8 @@ class API():
             'project': 'OV',
             'lincod': codigo_linha
         }
-        sleep(60)
-        res = requests.get(url, params=params, timeout=60)
+        sleep(300)
+        res = requests.get(url, params=params, timeout=300)
         html_page = res.text
         principal = BeautifulSoup(html_page, 'html.parser')
         area_codigo = principal.find(id='areCod').attrs['value']
