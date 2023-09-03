@@ -20,6 +20,7 @@ class SptransOperator(BaseOperator):
     Args:
         BaseOperator (_type_): _description_
     """
+    template_fields = ['file_path']
 
     def __init__(self, file_path, **kwargs):
         self.file_path = file_path

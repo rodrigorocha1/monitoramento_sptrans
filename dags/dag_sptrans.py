@@ -4,11 +4,13 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
+from os.path import join
 from datetime import datetime
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.python import BranchPythonOperator
-from airflow import DAG
+from airflow.models import DAG
+from operators.sptrans_operator import SptransOperator
 from src.api.api import API
 
 
@@ -57,6 +59,15 @@ banch_check_api = BranchPythonOperator(
     dag=dag
 )
 
+to = SptransOperator(
+    task_id='test_run',
+    file_path=join(
+        'data/datalake/bronze',
+        'extract_date={{ ds }}',
+        'posicao_{{ ds_nodash }}.json'
+    )
+)
+
 task_fim_dag = EmptyOperator(
     task_id='task_fim_dag',
     dag=dag,
@@ -64,5 +75,5 @@ task_fim_dag = EmptyOperator(
 )
 
 inicio_dag >> task_check_api >> banch_check_api
-banch_check_api >> task_sucesso >> task_fim_dag
+banch_check_api >> task_sucesso >> to >> task_fim_dag
 banch_check_api >> task_falha >> task_fim_dag
