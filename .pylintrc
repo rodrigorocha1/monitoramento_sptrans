@@ -5,7 +5,10 @@ disable=
       C0116, # Missing-function-docstring
       W3101,
       E0401,
-      W0104
+      W0104,
+      W0221,
+      R1707,
+      R0201,
 
 
 # A comma-separated list of package or module names from where C extensions may
