@@ -11,9 +11,7 @@ from src.api.api import API
 
 
 class SptransHook(HttpHook):
-    def __init__(self, end_time, start_time, conn_id=None) -> None:
-        self.end_time = end_time,
-        self.start_time = start_time
+    def __init__(self,  conn_id=None) -> None:
         self.conn_id = conn_id or 'sptrans_default'
         super().__init__(http_conn_id=self.conn_id)
 
@@ -37,3 +35,8 @@ class SptransHook(HttpHook):
     def run(self):
         session = self.get_conn()
         return self.obter_requisicao(session)
+
+
+if __name__ == '__main__':
+    req = SptransHook().run()
+    print(req)
