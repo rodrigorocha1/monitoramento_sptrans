@@ -1,6 +1,7 @@
 from typing import Any
 import json
-from airflow.models import BaseOperator
+from datetime import datetime, timedelta
+from airflow.models import BaseOperator, TaskInstance, DAG
 from airflow.utils.context import Context
 try:
     import sys
@@ -34,3 +35,16 @@ class SptransOperator(BaseOperator):
         with open('extracao_operacao.json', 'w') as output_file:
             json.dump(req, output_file, ensure_ascii=False)
             output_file.write('\n')
+
+
+if __name__ == '__main__':
+
+    TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.00Z"
+
+    end_time = datetime.now().strftime(TIMESTAMP_FORMAT)
+    start_time = (datetime.now() + timedelta(-1)
+                  ).date().strftime(TIMESTAMP_FORMAT)
+    with DAG(dag_id='Sptrans_API', start_date=datetime.now()) as dag:
+        to = SptransOperator(task_id='test_run')
+        ti = TaskInstance(task=to)
+        to.execute(ti.task_id)
