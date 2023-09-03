@@ -1,9 +1,7 @@
 from typing import Any
 import json
-from datetime import datetime, timedelta
 from pathlib import Path
-from os.path import join
-from airflow.models import BaseOperator, TaskInstance, DAG
+from airflow.models import BaseOperator
 from airflow.utils.context import Context
 try:
     import sys
@@ -43,23 +41,3 @@ class SptransOperator(BaseOperator):
         with open(self.file_path, 'w') as output_file:
             json.dump(req, output_file, ensure_ascii=False)
             output_file.write('\n')
-
-
-if __name__ == '__main__':
-
-    TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.00Z"
-
-    end_time = datetime.now().strftime(TIMESTAMP_FORMAT)
-    start_time = (datetime.now() + timedelta(-1)
-                  ).date().strftime(TIMESTAMP_FORMAT)
-    with DAG(dag_id='Sptrans_API', start_date=datetime.now()) as dag:
-        to = SptransOperator(
-            task_id='test_run',
-            file_path=join(
-                'data/datalake/bronze',
-                f'extract_date={datetime.now().date()}',
-                f'posicao_{datetime.now().date().strftime("%y%m%d")}.json'
-            ),
-        )
-        ti = TaskInstance(task=to)
-        to.execute(ti.task_id)
