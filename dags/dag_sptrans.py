@@ -12,13 +12,14 @@ from airflow.operators.python import BranchPythonOperator
 from airflow.models import DAG
 from operators.sptrans_operator import SptransOperator
 from src.api.api import API
+today = pendulum.now('America/Sao_Paulo').format('YYYY_MM_DD')
 
 
 dag = DAG('Extracao_dados_api_sptrans',
           description='Extração de dados',
-          schedule_interval='*/2 * * * *',
+          schedule_interval='*/4 * * * *',
           catchup=False,
-          start_date=pendulum.datetime(2023, 9, 3, tz='UTC'))
+          start_date=pendulum.datetime(2023, 9, 8, tz='America/Sao_Paulo'))
 
 
 inicio_dag = EmptyOperator(
@@ -58,10 +59,11 @@ to = SptransOperator(
     task_id='extrair_dados_sptrans',
     file_path=join(
         'data/datalake/bronze',
-        'extract_date={{ ds }}',
-        'posicao_{{ ds_nodash }}.json'
+        f'extract_date={today}',
+        f'posicao_{today}.json'
     )
 )
+
 
 task_fim_dag = EmptyOperator(
     task_id='task_fim_dag',

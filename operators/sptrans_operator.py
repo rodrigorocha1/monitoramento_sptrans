@@ -1,5 +1,4 @@
 from typing import Any
-import json
 from pathlib import Path
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
@@ -9,6 +8,7 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
+from src.database.infra import gravar_json
 from hook.sptrans_hook import SptransHook
 
 
@@ -43,7 +43,4 @@ class SptransOperator(BaseOperator):
         """
         req = SptransHook().run()
         self.create_parent_folder()
-        with open(self.file_path, 'a') as output_file:
-            if output_file is not None:
-                json.dump(req, output_file, ensure_ascii=False)
-                output_file.write('\n')
+        gravar_json(req=req, path=self.file_path)
