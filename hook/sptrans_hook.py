@@ -4,6 +4,7 @@ try:
     sys.path.insert(0, os.path.abspath(os.curdir))
 except ModuleNotFoundError:
     pass
+from datetime import datetime
 from airflow.providers.http.hooks.http import HttpHook
 from airflow.models import Variable
 import requests
@@ -48,6 +49,8 @@ class SptransHook(HttpHook):
     def obter_requisicao(self, session):
         response = self.conectar_api(session)
         json_response = response.json()
+        json_response['data_extracao'] = datetime.now() \
+            .strftime("%Y-%m-%d %H:%M")
         return json_response
 
     def run(self):
