@@ -1,5 +1,4 @@
 from typing import Tuple
-from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from airflow.models import Variable
@@ -23,8 +22,8 @@ class API():
             'project': 'OV',
             'lincod': codigo_linha
         }
-        sleep(120)
-        res = requests.get(url, params=params, timeout=1)
+
+        res = requests.get(url, params=params, timeout=30)
         html_page = res.text
         principal = BeautifulSoup(html_page, 'html.parser')
         area_codigo = principal.find(id='areCod').attrs['value']

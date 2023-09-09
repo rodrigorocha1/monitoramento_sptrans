@@ -49,8 +49,9 @@ class SptransHook(HttpHook):
     def obter_requisicao(self, session):
         response = self.conectar_api(session)
         json_response = response.json()
-        json_response['data_extracao'] = datetime.now() \
-            .strftime("%Y-%m-%d %H:%M")
+        json_response['data_extracao'] = datetime.now().strftime(
+            "%Y-%m-%d %H:%M"
+        )
         return json_response
 
     def run(self):
