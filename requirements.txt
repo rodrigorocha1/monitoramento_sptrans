@@ -107,6 +107,7 @@ marshmallow-sqlalchemy==0.26.1
 matplotlib-inline==0.1.6
 mdit-py-plugins==0.4.0
 mdurl==0.1.2
+minio==7.1.16
 multidict==6.0.4
 nest-asyncio==1.5.7
 networkx==3.1
@@ -138,7 +139,7 @@ Pygments==2.15.1
 PyJWT==2.7.0
 pyparsing==3.1.0
 pyproj==3.6.0
-pyspark==3.3.0
+pyspark==3.3.2
 python-daemon==3.0.1
 python-dateutil==2.8.2
 python-nvd3==0.15.0
