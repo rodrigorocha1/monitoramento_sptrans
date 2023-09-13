@@ -111,7 +111,7 @@ def sptrans_tranform(spark_session: SparkSession,
     export_json(
         df_dados_completos_operacao_agrupada,
         'DATA_EXTRACAO_API',
-        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_desagrupada'
+        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada'
     )
 
 
