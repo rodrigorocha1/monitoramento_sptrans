@@ -10,6 +10,7 @@ from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.python import BranchPythonOperator
 from airflow.models import DAG
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from operators.sptrans_operator import SptransOperator
 from src.api.api import API
 today = pendulum.now('America/Sao_Paulo').format('YYYY_MM_DD')
@@ -55,7 +56,7 @@ banch_check_api = BranchPythonOperator(
     dag=dag
 )
 
-to = SptransOperator(
+sptrans_operator = SptransOperator(
     task_id='extrair_dados_sptrans',
     file_path=join(
         'data/datalake/bronze',
@@ -65,12 +66,28 @@ to = SptransOperator(
 )
 
 
+sptrans_transformacao = SparkSubmitOperator(
+    task_id='id_sptrans_transformacao',
+    conn_id='id_spark',
+    application='/home/rodrigo/projetos/monitoramento_sptrans/src/data_transform/tranformacao_dataframe.py',
+    name='sptrans_tranform',
+    application_args=[
+        '--src_operacao_dia',
+        f'/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/bronze/extract_date={today}/*.json',
+        '--src_dados_completos_onibus',
+         '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/bronze/relacao_empresas_linha/dados_linhas_completo.csv'
+    ]
+
+)
+
+
 task_fim_dag = EmptyOperator(
     task_id='task_fim_dag',
     dag=dag,
     trigger_rule='all_done'
 )
 
+
 inicio_dag >> task_check_api >> banch_check_api
-banch_check_api >> to >> task_fim_dag
+banch_check_api >> sptrans_operator >> sptrans_transformacao >> task_fim_dag
 banch_check_api >> task_falha >> task_fim_dag
