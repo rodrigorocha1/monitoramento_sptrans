@@ -30,6 +30,8 @@ class SptransOperator(BaseOperator):
         super().__init__(**kwargs)
 
     def create_parent_folder(self):
+        """Método para criar pastas
+        """
         (Path(self.file_path).parent).mkdir(parents=True, exist_ok=True)
 
     def execute(self, context: Context) -> Any:
