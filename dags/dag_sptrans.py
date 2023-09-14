@@ -18,7 +18,7 @@ today = pendulum.now('America/Sao_Paulo').format('YYYY_MM_DD')
 
 dag = DAG('Extracao_dados_api_sptrans',
           description='Extração de dados',
-          schedule_interval='*/4 * * * *',
+          schedule_interval='*/5 * * * *',
           catchup=False,
           start_date=pendulum.datetime(2023, 9, 8, tz='America/Sao_Paulo'))
 
