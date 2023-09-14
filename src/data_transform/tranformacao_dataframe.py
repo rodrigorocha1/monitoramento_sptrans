@@ -70,7 +70,7 @@ def export_json(df_param: DataFrame,
         .write \
         .partitionBy(coluna_particao) \
         .mode(mode)\
-        .json(path_exportacao)
+        .parquet(path_exportacao)
 
 
 def operacao_desagrupada(df_param: DataFrame) -> DataFrame:
@@ -148,13 +148,13 @@ def sptrans_tranform(spark_session: SparkSession,
     export_json(
         df_dados_completos_operacao_desagrupada,
         'DATA_EXTRACAO_API',
-        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_desagrupada'
+        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_desagrupada.parquet'
     )
 
     export_json(
         df_dados_completos_operacao_agrupada,
         'DATA_EXTRACAO_API',
-        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada'
+        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada.parquet'
     )
 
 
