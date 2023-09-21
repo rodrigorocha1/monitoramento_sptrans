@@ -2,6 +2,7 @@ import argparse
 from pyspark.sql import functions as f
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql import SparkSession
+import pendulum
 
 
 def operacao_agrupada(df_param: DataFrame) -> DataFrame:
@@ -137,6 +138,7 @@ def sptrans_tranform(spark_session: SparkSession,
         'LETREIRO_COMPLETO',
 
     )
+    today = pendulum.now('America/Sao_Paulo').format('YYYY_MM_DD')
 
     df_dados_completos_operacao_agrupada = juncao_dataframe(
         df_lista_consocio,
@@ -148,13 +150,13 @@ def sptrans_tranform(spark_session: SparkSession,
     export_json(
         df_dados_completos_operacao_desagrupada,
         'DATA_EXTRACAO_API',
-        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_desagrupada.parquet'
+        f'/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_desagrupada_{today}.parquet'
     )
 
     export_json(
         df_dados_completos_operacao_agrupada,
         'DATA_EXTRACAO_API',
-        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada.parquet'
+        f'/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada_{today}.parquet'
     )
 
 
