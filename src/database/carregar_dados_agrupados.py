@@ -87,5 +87,6 @@ class CarregarDadosAgrupados:
             data_extracao=data_consulta,
             coluna_agrupamento=coluna_agrupamento
         )
-
+        df_filter = df_filter.toPandas()
+        self.__spark_session.stop()
         return df_filter

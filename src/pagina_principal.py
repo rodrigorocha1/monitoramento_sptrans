@@ -8,9 +8,10 @@ st.set_page_config(
 
 cda = CarregarDadosAgrupados()
 
-df = cda.consultar_dados('2023-09-18', 'DATA_EXTRACAO')
-pandas_df = df.toPandas()
+df = cda.consultar_dados('2023-09-15', 'DATA_EXTRACAO')
 
+
+options = st.multiselect('cor', ['Vermelho', 'Verde'], ['Verde'])
 
 with st.sidebar:
     st.write('SideBarr')
@@ -27,7 +28,7 @@ with st.container():
             ('Manhã', 'Tarde', 'Noite')
         )
         st.write('Selecionou', option)
-        st.dataframe(pandas_df)
+        st.dataframe(df)
 
     with col2:
         st.header('Tabela 2')
