@@ -45,8 +45,6 @@ class CarregarDadosAgrupados:
         return turno
 
     def __dataframe_filter(self, dataframe_completo: DataFrame,  data_extracao: str, coluna_agrupamento: str) -> DataFrame:
-        print('dataframe_completo')
-        print(dataframe_completo.columns)
         dataframes_agrupados_completo = dataframe_completo.withColumn(
             'TURNO', self.turno(F.col('HORA_API'))
         )

@@ -11,7 +11,12 @@ cda = CarregarDadosAgrupados()
 df = cda.consultar_dados('2023-09-15', 'DATA_EXTRACAO')
 
 
-options = st.multiselect('cor', ['Vermelho', 'Verde'], ['Verde'])
+# options = st.multiselect(
+#     'cor',
+#     df.columns,
+#     ['LINHA', 'CODIGO_AREA']
+
+# )
 
 with st.sidebar:
     st.write('SideBarr')
