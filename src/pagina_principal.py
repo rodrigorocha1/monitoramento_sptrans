@@ -21,12 +21,13 @@ with st.container():
             key='Turno1'
         )
         st.write('Selecionou', option)
-        df_tabela1, _ = consultar_dados(
-            data_consulta='2023-09-15',
-            coluna_agrupamento=['CODIGO_AREA'],
-            ordenacao=['CODIGO_AREA']
-        )
-        st.dataframe(df_tabela1)
+        with st.spinner('Aguarde'):
+            df_tabela1, _ = consultar_dados(
+                data_consulta='2023-09-15',
+                coluna_agrupamento=['CODIGO_AREA'],
+                ordenacao=['CODIGO_AREA']
+            )
+            st.dataframe(df_tabela1)
 
     with col2:
 
@@ -36,13 +37,14 @@ with st.container():
             ('Manhã', 'Tarde', 'Noite'),
             key='Turno2'
         )
-        df_tabela2, _ = consultar_dados(
-            data_consulta='2023-09-15',
-            coluna_agrupamento=['EMPRESA'],
-            ordenacao=['EMPRESA']
+        with st.spinner('Aguarde'):
+            df_tabela2, _ = consultar_dados(
+                data_consulta='2023-09-15',
+                coluna_agrupamento=['EMPRESA'],
+                ordenacao=['EMPRESA']
 
-        )
-        st.dataframe(df_tabela2)
+            )
+            st.dataframe(df_tabela2)
 
 
 with st.container():
@@ -57,12 +59,13 @@ with st.container():
             ('Manhã', 'Tarde', 'Noite'),
             key='Turno3'
         )
-        df_tabela3, _ = consultar_dados(
-            data_consulta='2023-09-15',
-            coluna_agrupamento=['TURNO', 'EMPRESA'],
-            ordenacao=['TURNO']
-        )
-        st.dataframe(df_tabela3)
+        with st.spinner('Aguarde'):
+            df_tabela3, _ = consultar_dados(
+                data_consulta='2023-09-15',
+                coluna_agrupamento=['TURNO', 'EMPRESA'],
+                ordenacao=['TURNO']
+            )
+            st.dataframe(df_tabela3)
 
     with col2:
         st.header('Tabela 4')
@@ -71,13 +74,15 @@ with st.container():
             ('Manhã', 'Tarde', 'Noite'),
             key='Turno4'
         )
-        df_tabela4, _ = consultar_dados(
-            data_consulta='2023-09-15',
-            coluna_agrupamento=[
-                'LETREIRO_COMPLETO',
-                'LETREIRO_ORIGEM',
-                'LETREIRO_DESTINO'
-            ],
-            ordenacao=['LETREIRO_COMPLETO']
-        )
-        st.dataframe(df_tabela4)
+        with st.spinner('Aguarde'):
+
+            df_tabela4, _ = consultar_dados(
+                data_consulta='2023-09-15',
+                coluna_agrupamento=[
+                    'LETREIRO_COMPLETO',
+                    'LETREIRO_ORIGEM',
+                    'LETREIRO_DESTINO'
+                ],
+                ordenacao=['LETREIRO_COMPLETO']
+            )
+            st.dataframe(df_tabela4)
