@@ -17,6 +17,7 @@ disable=
       W1514,
       W9008,
       R0801,
+      W0621
 
 
 # A comma-separated list of package or module names from where C extensions may

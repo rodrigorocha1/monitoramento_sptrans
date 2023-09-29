@@ -1,22 +1,19 @@
 import streamlit as st
-from database.carregar_dados_agrupados import CarregarDadosAgrupados
+from database.carregar_dados_agrupados import consultar_dados
 
 st.set_page_config(
     page_title='Monitoramento sptrans'
 )
 
 
-cda = CarregarDadosAgrupados()
-
-df = cda.consultar_dados('2023-09-15', 'DATA_EXTRACAO')
+df = consultar_dados('2023-09-15', 'DATA_EXTRACAO')
 
 
-# options = st.multiselect(
-#     'cor',
-#     df.columns,
-#     ['LINHA', 'CODIGO_AREA']
+options = st.multiselect(
+    'cor',
+    df.columns
 
-# )
+)
 
 with st.sidebar:
     st.write('SideBarr')
@@ -36,7 +33,9 @@ with st.container():
         st.dataframe(df)
 
     with col2:
+
         st.header('Tabela 2')
+        st.dataframe(df)
 
 
 with st.container():
@@ -46,6 +45,8 @@ with st.container():
 
     with col1:
         st.header('Tabela 3')
+        st.dataframe(df)
 
     with col2:
         st.header('Tabela 4')
+        st.dataframe(df)
