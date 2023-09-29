@@ -1,5 +1,6 @@
 from functools import reduce
 from datetime import datetime
+from datetime import date
 import os
 from typing import List
 from pyspark.sql import SparkSession
@@ -19,7 +20,7 @@ def union_all(dfs) -> DataFrame:
     return reduce(DataFrame.unionAll, dfs)
 
 
-def load_database(_spark_sessao: SparkSession) -> List[DataFrame]:
+def load_database() -> List[DataFrame]:
     diretorio_agrupado = '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/prata/operacao_agrupada/'
     file_list = os.listdir(diretorio_agrupado)
     lista_dataframe = []
@@ -28,9 +29,18 @@ def load_database(_spark_sessao: SparkSession) -> List[DataFrame]:
             caminho_completo = os.path.join(
                 diretorio_agrupado, item
             )
-            dataframe = _spark_sessao.read.parquet(caminho_completo)
+            dataframe = iniciar_sessao_spark().read.parquet(caminho_completo)
             lista_dataframe.append(dataframe)
     return lista_dataframe
+
+
+def obter_colunas_tempo() -> List[date]:
+    df_original = union_all(load_database())
+    colunas_tempo = df_original.select('DATA_EXTRACAO') \
+        .distinct() \
+        .rdd.flatMap(lambda linha: [linha.DATA_EXTRACAO]) \
+        .collect()
+    return colunas_tempo
 
 
 @F.udf(returnType=t.StringType())
@@ -47,10 +57,12 @@ def turno(hora: str) -> str:
     return turno
 
 
-def dataframe_filter(dataframe_completo: DataFrame,
-                     data_extracao: str,
-                     coluna_agrupamento: str
-                     ) -> DataFrame:
+def dataframe_filter(
+    dataframe_completo: DataFrame,
+    data_extracao: str,
+    coluna_agrupamento: List[str],
+    ordenacao: str,
+) -> DataFrame:
     dataframes_agrupados_completo = dataframe_completo.withColumn(
         'TURNO', turno(F.col('HORA_API'))
     )
@@ -67,29 +79,26 @@ def dataframe_filter(dataframe_completo: DataFrame,
         dataframes_agrupados_completo.LETREIRO_COMPLETO,
         dataframes_agrupados_completo.QTDE_VEICULOS_OPERACAO,
         dataframes_agrupados_completo.CODIGO_IDENTIFICADOR,
-    ) \
-        .filter(
-        (dataframes_agrupados_completo.DATA_EXTRACAO == data_extracao)
-    )\
-        .groupBy(['DATA_EXTRACAO', 'CODIGO_AREA']) \
+    ).filter(
+        dataframes_agrupados_completo.DATA_EXTRACAO == data_extracao) \
+        .groupBy(coluna_agrupamento) \
         .agg(
         F.sum('QTDE_VEICULOS_OPERACAO')
         .alias('QUANTIDADE_VEICULOS_OPERACAO')
-    ).orderBy(coluna_agrupamento)
+    ).orderBy(ordenacao)
 
     return df_filter
 
 
-def consultar_dados(data_consulta, coluna_agrupamento):
-    sessao_spark = iniciar_sessao_spark()
-
-    df_original = load_database(sessao_spark)
+def consultar_dados(coluna_agrupamento, data_consulta, ordenacao):
+    df_original = load_database()
     df_original = union_all(df_original)
     df_filter = dataframe_filter(
         dataframe_completo=df_original,
         data_extracao=data_consulta,
-        coluna_agrupamento=coluna_agrupamento
+        coluna_agrupamento=coluna_agrupamento,
+        ordenacao=ordenacao
     )
     df_filter = df_filter.toPandas()
 
-    return df_filter
+    return df_filter, df_original.columns

@@ -1,19 +1,9 @@
 import streamlit as st
 from database.carregar_dados_agrupados import consultar_dados
-
 st.set_page_config(
     page_title='Monitoramento sptrans'
 )
 
-
-df = consultar_dados('2023-09-15', 'DATA_EXTRACAO')
-
-
-options = st.multiselect(
-    'cor',
-    df.columns
-
-)
 
 with st.sidebar:
     st.write('SideBarr')
@@ -27,15 +17,32 @@ with st.container():
         st.header('Tabela 1')
         option = st.selectbox(
             'Selecione o turno',
-            ('Manhã', 'Tarde', 'Noite')
+            ('Manhã', 'Tarde', 'Noite'),
+            key='Turno1'
         )
         st.write('Selecionou', option)
-        st.dataframe(df)
+        df_tabela1, _ = consultar_dados(
+            data_consulta='2023-09-15',
+            coluna_agrupamento=['CODIGO_AREA'],
+            ordenacao=['CODIGO_AREA']
+        )
+        st.dataframe(df_tabela1)
 
     with col2:
 
         st.header('Tabela 2')
-        st.dataframe(df)
+        option2 = st.selectbox(
+            'Selecione o turno',
+            ('Manhã', 'Tarde', 'Noite'),
+            key='Turno2'
+        )
+        df_tabela2, _ = consultar_dados(
+            data_consulta='2023-09-15',
+            coluna_agrupamento=['EMPRESA'],
+            ordenacao=['EMPRESA']
+
+        )
+        st.dataframe(df_tabela2)
 
 
 with st.container():
@@ -45,8 +52,32 @@ with st.container():
 
     with col1:
         st.header('Tabela 3')
-        st.dataframe(df)
+        option3 = st.selectbox(
+            'Selecione o turno',
+            ('Manhã', 'Tarde', 'Noite'),
+            key='Turno3'
+        )
+        df_tabela3, _ = consultar_dados(
+            data_consulta='2023-09-15',
+            coluna_agrupamento=['TURNO', 'EMPRESA'],
+            ordenacao=['TURNO']
+        )
+        st.dataframe(df_tabela3)
 
     with col2:
         st.header('Tabela 4')
-        st.dataframe(df)
+        option4 = st.selectbox(
+            'Selecione o turno',
+            ('Manhã', 'Tarde', 'Noite'),
+            key='Turno4'
+        )
+        df_tabela4, _ = consultar_dados(
+            data_consulta='2023-09-15',
+            coluna_agrupamento=[
+                'LETREIRO_COMPLETO',
+                'LETREIRO_ORIGEM',
+                'LETREIRO_DESTINO'
+            ],
+            ordenacao=['LETREIRO_COMPLETO']
+        )
+        st.dataframe(df_tabela4)
