@@ -472,8 +472,19 @@ mapa_linhas = folium.Map(
 
 
 for i in range(len(posicao)-1):
-    folium.PolyLine(locations=[[posicao[i][0], posicao[i][1]], [posicao[i+1][0], posicao[i+1][1]]],
-                    color='navy').add_to(mapa_linhas)
+    folium.PolyLine(
+        locations=[
+            [
+                posicao[i][0],
+                posicao[i][1]
+            ],
+            [
+                posicao[i+1][0],
+                posicao[i+1][1]
+            ]
+        ],
+        color='navy'
+    ).add_to(mapa_linhas)
 
 mapa_linhas.add_child(folium.LatLngPopup())
 
