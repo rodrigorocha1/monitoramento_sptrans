@@ -6,7 +6,7 @@ import pandas as pd
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DoubleType, FloatType
 import pyspark.sql.functions as F
-from carregar_dados_agrupados import union_all, verificar_turno
+from carregar_dados_agrupados import union_all, verificar_turno, iniciar_sessao_spark
 
 
 def load_dataframe_desagrupados(spark: SparkSession) -> DataFrame:
@@ -126,7 +126,12 @@ def obter_posicao_onibus(df_posicao: DataFrame) -> List[List]:
     return posicao_onibus
 
 
-def gerar_mapa(posicao_onibus: List[List], tracado_linha: List[List], cor_linha: str, prefixo_onibus: str):
+def gerar_mapa(
+    posicao_onibus: List[List],
+    tracado_linha: List[List],
+    cor_linha: str,
+    prefixo_onibus: str
+):
     mapa_linhas = folium.Map(location=posicao_onibus[0][1],
                              zoom_start=12,
                              control_scale=True)
@@ -177,3 +182,41 @@ def obter_tracado_linha(spark_session: SparkSession, shape_id: List):
     posicao = df_linha_filter.rdd.flatMap(
         lambda linha: [[linha.shape_pt_lat, linha.shape_pt_lon]]).collect()
     return posicao
+
+
+def load_mapa():
+    spark_session = iniciar_sessao_spark()
+    dataframe_desagrupados = load_dataframe_desagrupados(spark=spark_session)
+    df_prefixo_onibus = obter_prefixo_onibus(
+        dataframes_desagrupados_completo=dataframe_desagrupados
+    )
+    prefixo_onibus = '11567'
+    dataframe_filter = dataframe_filter_desagrupados(
+        dataframes_desagrupados_completo=dataframe_desagrupados,
+        data_extracao='2023-09-18',
+        prefixo_onibus=prefixo_onibus,
+        turno='Noite'
+    )
+    letreiro_onibus = obter_letreiro_onibus(
+        dataframe_prefixo_onibus=dataframe_filter
+    )
+    rota_linha = obter_rota_linha(
+        letreiro_onibus=letreiro_onibus
+    )
+    dataframe_filter = dataframe_filter.withColumn(
+        "DISTANCIA", haversine_udf(
+            dataframe_filter["LATITUDE"], dataframe_filter["LONGITUDE"]
+        )
+    )
+    soma_distancias = dataframe_filter.selectExpr(
+        "sum(DISTANCIA)").collect()[0][0]
+    id_tracado_linha = obter_id_tracado_linha(
+        spark_session=spark_session, rota_id=rota_linha[0][0]
+    )
+    tracado_linha = obter_tracado_linha(
+        spark_session=spark_session, shape_id=id_tracado_linha
+    )
+    posicao_onibus = obter_posicao_onibus(df_posicao=dataframe_filter)
+    mapa = gerar_mapa(posicao_onibus=posicao_onibus, tracado_linha=tracado_linha,
+                      cor_linha=rota_linha[0][2], prefixo_onibus=prefixo_onibus)
+    return mapa
