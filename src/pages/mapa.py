@@ -7,40 +7,6 @@ st.set_page_config(
 )
 
 
-def load_linhas(spark):
-    df_selecao_rota_linha = spark.read \
-        .options(delimiter=',', header=True, inferSchema='True') \
-        .csv('../data/datalake/bronze/arquivos_gtfs/routes.txt', )
-    opcoes = df_selecao_rota_linha.rdd.flatMap(
-        lambda linha:
-        [
-            [
-                (
-                    linha.route_short_name, linha.route_long_name
-                ),
-                (linha.route_color)
-            ]
-        ]
-    ).collect()
-
-    return opcoes
-
-
-def obter_corpo_linha(spark, rota_linha):
-    df_selecao_linha = spark.read.options(delimiter=',', header=True, inferSchema='True') \
-        .csv('../data/datalake/bronze/arquivos_gtfs/trips.txt', )
-
-    df_selecao_linha = df_selecao_linha.select(
-        df_selecao_linha.shape_id
-    ).filter(
-        df_selecao_linha.route_id == rota_linha
-    )
-
-    shape_id = df_selecao_linha.rdd.flatMap(
-        lambda linha: [linha.shape_id]
-    ).collect()
-    return shape_id
-
 
 st.write('Mapa')
 posicao = [[-23.563552856445312, -46.59136199951172],
