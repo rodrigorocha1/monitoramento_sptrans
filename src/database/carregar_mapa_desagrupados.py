@@ -6,7 +6,7 @@ import pandas as pd
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DoubleType, FloatType
 import pyspark.sql.functions as F
-from carregar_dados_agrupados import union_all, verificar_turno, iniciar_sessao_spark
+from src.database.carregar_dados_agrupados import union_all, verificar_turno, iniciar_sessao_spark
 
 
 def load_dataframe_desagrupados(spark: SparkSession) -> DataFrame:
