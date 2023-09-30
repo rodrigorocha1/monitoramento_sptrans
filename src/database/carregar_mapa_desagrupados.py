@@ -120,21 +120,20 @@ def haversine_udf(lat, lon):
 
 def obter_posicao_onibus(df_posicao: DataFrame) -> List[List]:
     posicao_onibus = df_posicao.rdd.flatMap(
-        lambda linha: [[linha.LATITUDE, linha.LONGITUDE]]
+        lambda linha: [[(linha.HORA_API), [linha.LATITUDE, linha.LONGITUDE]]]
     ).collect()
-
     return posicao_onibus
 
 
-def gerar_mapa(posicao_onibus: List[List], tracado_linha: List[List], cor_linha: str):
-    mapa_linhas = folium.Map(location=posicao_onibus[0],
+def gerar_mapa(posicao_onibus: List[List], tracado_linha: List[List], cor_linha: str, prefixo_onibus: str):
+    mapa_linhas = folium.Map(location=posicao_onibus[0][1],
                              zoom_start=12,
                              control_scale=True)
 
     for posicao in posicao_onibus:
         folium.Marker(
-            location=posicao,
-            popup='This is a marker!',
+            location=posicao[1],
+            popup=f'Prefixo ônibus {prefixo_onibus} - Hora : {posicao[0]}',
             icon=folium.Icon(color='blue')
         ).add_to(mapa_linhas)
 
