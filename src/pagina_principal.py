@@ -69,7 +69,7 @@ with st.container():
         selected_date2 = gerar_input_data(key='selected_date2')
         st.write(selected_date2)
         with st.spinner('Aguarde'):
-            @st.cache_data
+            # @st.cache_data
             def cached_load_table2(option):
                 df_tabela2, _ = consultar_dados(
                     data_consulta=selected_date2,
@@ -95,7 +95,7 @@ with st.container():
     selected_date3 = gerar_input_data(key='selected_date3')
     st.write(selected_date3)
     with st.spinner('Aguarde'):
-        @st.cache_data
+        # @st.cache_data
         def cached_load_table4(option):
             df_tabela4, _ = consultar_dados(
                 data_consulta=selected_date3,
@@ -109,4 +109,9 @@ with st.container():
             )
             return df_tabela4
         df_tabela4 = cached_load_table4(option4)
+        st.markdown(
+            '<h1 style="text-align: center;">Visualização da Tabela</h1>', unsafe_allow_html=True)
+        st.markdown(
+            '<div style="display: flex; justify-content: center;">', unsafe_allow_html=True)
         st.dataframe(df_tabela4)
+        st.markdown('</div>', unsafe_allow_html=True)
