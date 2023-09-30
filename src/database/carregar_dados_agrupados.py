@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import date
 import os
 from typing import List
+import streamlit as st
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import pyspark.sql.types as t
@@ -94,8 +95,12 @@ def dataframe_filter(
 
 
 def consultar_dados(coluna_agrupamento, data_consulta, ordenacao, turno):
-    df_original = load_database()
-    df_original = union_all(df_original)
+    if 'data' not in st.session_state:
+        df_original = load_database()
+        df_original = union_all(df_original)
+        st.session_state['data'] = df_original
+    else:
+        df_original = st.session_state['data']
     df_filter = dataframe_filter(
         dataframe_completo=df_original,
         data_extracao=data_consulta,
