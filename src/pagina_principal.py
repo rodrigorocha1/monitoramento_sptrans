@@ -9,15 +9,17 @@ st.set_page_config(
 )
 
 
-def gerar_input_data():
+def gerar_input_data(key):
     d_time = st.date_input(
         'Selecione a data',
         (
             datetime.date(2023, 9, 15)
         ),
+
         datetime.date(2023, 9, 15),
         datetime.date(2023, 9, 19),
         format="YYYY-MM-DD",
+        key=key,
     )
     selected_date = d_time.strftime("%Y-%m-%d")
     return selected_date
@@ -33,9 +35,7 @@ with st.container():
 
     with col1:
         st.header('Tabela 1')
-
-        selected_date = gerar_input_data()
-        st.write(selected_date)
+        selected_date1 = gerar_input_data(key='selected_date1')
         option = st.selectbox(
             'Selecione o turno',
             ('Manhã', 'Tarde', 'Noite'),
@@ -46,7 +46,7 @@ with st.container():
             # @st.cache_data
             def cached_load_table1(option):
                 df_table1, _ = consultar_dados(
-                    data_consulta=selected_date,
+                    data_consulta=selected_date1,
                     coluna_agrupamento=['DATA_EXTRACAO', 'CODIGO_AREA'],
                     ordenacao=['CODIGO_AREA'],
                     turno=option
@@ -66,11 +66,13 @@ with st.container():
             ('Manhã', 'Tarde', 'Noite'),
             key='Turno2'
         )
+        selected_date2 = gerar_input_data(key='selected_date2')
+        st.write(selected_date2)
         with st.spinner('Aguarde'):
             @st.cache_data
             def cached_load_table2(option):
                 df_tabela2, _ = consultar_dados(
-                    data_consulta='2023-09-15',
+                    data_consulta=selected_date2,
                     coluna_agrupamento=['EMPRESA'],
                     ordenacao=['EMPRESA'],
                     turno=option
@@ -90,11 +92,13 @@ with st.container():
         ('Manhã', 'Tarde', 'Noite'),
         key='Turno4'
     )
+    selected_date3 = gerar_input_data(key='selected_date3')
+    st.write(selected_date3)
     with st.spinner('Aguarde'):
         @st.cache_data
         def cached_load_table4(option):
             df_tabela4, _ = consultar_dados(
-                data_consulta='2023-09-15',
+                data_consulta=selected_date3,
                 coluna_agrupamento=[
                     'LETREIRO_COMPLETO',
                     'LETREIRO_ORIGEM',
