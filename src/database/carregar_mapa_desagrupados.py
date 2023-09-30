@@ -4,7 +4,7 @@ import math
 import folium
 import pandas as pd
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import DoubleType
+from pyspark.sql.types import DoubleType, FloatType
 import pyspark.sql.functions as F
 from carregar_dados_agrupados import union_all, verificar_turno
 
@@ -118,7 +118,7 @@ def haversine_udf(lat, lon):
     return pd.Series(distances)
 
 
-def obter_posicao_onibus(df_posicao: DataFrame) -> List[List[float, float]]:
+def obter_posicao_onibus(df_posicao: DataFrame) -> List[List]:
     posicao_onibus = df_posicao.rdd.flatMap(
         lambda linha: [[linha.LATITUDE, linha.LONGITUDE]]
     ).collect()
@@ -126,7 +126,7 @@ def obter_posicao_onibus(df_posicao: DataFrame) -> List[List[float, float]]:
     return posicao_onibus
 
 
-def gerar_mapa(posicao_onibus: List[List[float, float]]):
+def gerar_mapa(posicao_onibus: List[List], tracado_linha: List[List], cor_linha: str):
     mapa_linhas = folium.Map(location=posicao_onibus[0],
                              zoom_start=12,
                              control_scale=True)
@@ -138,6 +138,42 @@ def gerar_mapa(posicao_onibus: List[List[float, float]]):
             icon=folium.Icon(color='blue')
         ).add_to(mapa_linhas)
 
-        mapa_linhas.add_child(folium.LatLngPopup())
+    for i in range(len(tracado_linha)-1):
+        folium.PolyLine(
+            locations=[
+                [tracado_linha[i][0], tracado_linha[i][1]],
+                [tracado_linha[i+1][0], tracado_linha[i+1][1]]
+            ],
+            color=f'#{cor_linha}').add_to(mapa_linhas)
+
+    mapa_linhas.add_child(folium.LatLngPopup())
 
     return mapa_linhas
+
+
+def obter_id_tracado_linha(spark_session: SparkSession, rota_id: str):
+    df_selecao_linha = spark_session.read \
+        .options(delimiter=',', header=True, inferSchema='True') \
+        .csv('/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/bronze/arquivos_gtfs/trips.txt', )
+    df_selecao_linha = df_selecao_linha.select(
+        df_selecao_linha.shape_id
+    ).filter(
+        df_selecao_linha.route_id == rota_id
+    )
+    shape_id = df_selecao_linha.rdd.flatMap(
+        lambda linha: [linha.shape_id]).collect()
+    return shape_id
+
+
+def obter_tracado_linha(spark_session: SparkSession, shape_id: List):
+    df_trajeto_linhas = spark_session.read.options(delimiter=',', header=True).csv(
+        '/home/rodrigo/projetos/monitoramento_sptrans/data/datalake/bronze/arquivos_gtfs/shapes.txt', )
+    df_linha_filter = df_trajeto_linhas.filter(
+        df_trajeto_linhas.shape_id.isin(shape_id))
+    df_linha_filter = df_linha_filter.withColumn(
+        'shape_pt_lat', F.col('shape_pt_lat').cast(FloatType()))
+    df_linha_filter = df_linha_filter.withColumn(
+        'shape_pt_lon', F.col('shape_pt_lon').cast(FloatType()))
+    posicao = df_linha_filter.rdd.flatMap(
+        lambda linha: [[linha.shape_pt_lat, linha.shape_pt_lon]]).collect()
+    return posicao
