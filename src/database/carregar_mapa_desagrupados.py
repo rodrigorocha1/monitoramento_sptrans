@@ -29,7 +29,8 @@ def load_dataframe_desagrupados(spark: SparkSession) -> DataFrame:
 def obter_prefixo_onibus(dataframes_desagrupados_completo: DataFrame) -> List[int]:
     df_prefixo_onibus = dataframes_desagrupados_completo.select(
         dataframes_desagrupados_completo.PREFIXO_ONIBUS,
-    ).distinct().rdd.flatMap(lambda linha: [linha.PREFIXO_ONIBUS]).collect()
+    ).orderBy('PREFIXO_ONIBUS')\
+        .distinct().rdd.flatMap(lambda linha: [linha.PREFIXO_ONIBUS]).collect()
     return df_prefixo_onibus
 
 
