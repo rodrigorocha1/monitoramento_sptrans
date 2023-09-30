@@ -1,6 +1,7 @@
 from typing import List
 import os
 import math
+import folium
 import pandas as pd
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DoubleType
@@ -117,9 +118,26 @@ def haversine_udf(lat, lon):
     return pd.Series(distances)
 
 
-def obter_posicao_onibus(df_posicao: DataFrame):
+def obter_posicao_onibus(df_posicao: DataFrame) -> List[List[float, float]]:
     posicao_onibus = df_posicao.rdd.flatMap(
         lambda linha: [[linha.LATITUDE, linha.LONGITUDE]]
     ).collect()
 
     return posicao_onibus
+
+
+def gerar_mapa(posicao_onibus: List[List[float, float]]):
+    mapa_linhas = folium.Map(location=posicao_onibus[0],
+                             zoom_start=12,
+                             control_scale=True)
+
+    for posicao in posicao_onibus:
+        folium.Marker(
+            location=posicao,
+            popup='This is a marker!',
+            icon=folium.Icon(color='blue')
+        ).add_to(mapa_linhas)
+
+        mapa_linhas.add_child(folium.LatLngPopup())
+
+    return mapa_linhas
