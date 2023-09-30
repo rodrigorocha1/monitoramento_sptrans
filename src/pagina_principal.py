@@ -42,6 +42,7 @@ with st.container():
             key='Turno1'
         )
         st.write('Selecionou', option)
+
         with st.spinner('Aguarde'):
             # @st.cache_data
             def cached_load_table1(option):
@@ -52,7 +53,7 @@ with st.container():
                     turno=option
                 )
                 return df_table1
-
+        st.button('Clique aqui para carregar/Atualizar')
         df_tabela1 = cached_load_table1(option)
         st.dataframe(df_tabela1)
         # st.plotly_chart(table_plot(df_tabela1, [df_tabela1.CODIGO_AREA,

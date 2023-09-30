@@ -99,8 +99,10 @@ def consultar_dados(coluna_agrupamento, data_consulta, ordenacao, turno):
         df_original = load_database()
         df_original = union_all(df_original)
         st.session_state['data'] = df_original
+        print('not session')
     else:
         df_original = st.session_state['data']
+        print('sesion')
     df_filter = dataframe_filter(
         dataframe_completo=df_original,
         data_extracao=data_consulta,
