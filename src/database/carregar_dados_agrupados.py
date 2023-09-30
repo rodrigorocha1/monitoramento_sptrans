@@ -44,7 +44,7 @@ def obter_colunas_tempo() -> List[date]:
 
 
 @F.udf(returnType=t.StringType())
-def turno(hora: str) -> str:
+def verificar_turno(hora: str) -> str:
     hora_formatada = datetime.strptime(hora, '%H:%M').time()
     if 0 <= hora_formatada.hour < 6:
         turno = 'Madrugada'
@@ -62,9 +62,10 @@ def dataframe_filter(
     data_extracao: str,
     coluna_agrupamento: List[str],
     ordenacao: str,
+    turno
 ) -> DataFrame:
     dataframes_agrupados_completo = dataframe_completo.withColumn(
-        'TURNO', turno(F.col('HORA_API'))
+        'TURNO', verificar_turno(F.col('HORA_API'))
     )
 
     df_filter = dataframes_agrupados_completo.select(
@@ -80,7 +81,9 @@ def dataframe_filter(
         dataframes_agrupados_completo.QTDE_VEICULOS_OPERACAO,
         dataframes_agrupados_completo.CODIGO_IDENTIFICADOR,
     ).filter(
-        dataframes_agrupados_completo.DATA_EXTRACAO == data_extracao) \
+        (dataframes_agrupados_completo.DATA_EXTRACAO == data_extracao) &
+        (dataframes_agrupados_completo.TURNO == turno)
+    ) \
         .groupBy(coluna_agrupamento) \
         .agg(
         F.sum('QTDE_VEICULOS_OPERACAO')
@@ -90,14 +93,15 @@ def dataframe_filter(
     return df_filter
 
 
-def consultar_dados(coluna_agrupamento, data_consulta, ordenacao):
+def consultar_dados(coluna_agrupamento, data_consulta, ordenacao, turno):
     df_original = load_database()
     df_original = union_all(df_original)
     df_filter = dataframe_filter(
         dataframe_completo=df_original,
         data_extracao=data_consulta,
         coluna_agrupamento=coluna_agrupamento,
-        ordenacao=ordenacao
+        ordenacao=ordenacao,
+        turno=turno
     )
     df_filter = df_filter.toPandas()
 
